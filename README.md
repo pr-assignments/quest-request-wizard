@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quote Request Wizard
 
-## Getting Started
+## How to Install
 
-First, run the development server:
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/your-username/quote-request-wizard.git
+cd quote-request-wizard
+```
+
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+3. **Run the development server**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. **Visit the app**  
+   Open `http://localhost:3000` in your browser to view the wizard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 1. Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This wizard is part of a platform designed to streamline quote requests between maritime stakeholders — shipowners, brokers, and underwriters. It allows a Requester to fill out a step-by-step form with company, vessel, and coverage information, and submit the details to receive quotes. The goal is to make this process user-friendly, persistent, and easy to complete in a single-page interface.
 
-## Learn More
+The wizard guides the user through four key steps — collecting the necessary data, validating entries, saving drafts, and reviewing the information before submission. It also ensures that users can return to a partially completed form and continue seamlessly.
 
-To learn more about Next.js, take a look at the following resources:
+## 2. Data Model
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```ts
+export interface QuoteRequest {
+  companyName: string;
+  contactEmail: string;
+  vesselName: string;
+  vesselType: "Bulk Carrier" | "Oil Tanker" | "Container Ship";
+  coverageLevel: "Basic" | "Standard" | "Premium";
+  cargoValue: number;
+}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 3. State & Persistence
 
-## Deploy on Vercel
+The application uses `useReducer` combined with React Context (`QuoteProvider`) to manage wizard state globally. The reducer updates the form state and current step, and each change is persisted to `localStorage` under the key `quoteDraft`. On initial load, the wizard checks localStorage and restores any in-progress data, determining the appropriate step to resume from. Navigation between steps is controlled by dispatching `NEXT_STEP` and `PREV_STEP` actions.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 4. Styling Choices
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Tailwind CSS v4 was used for utility-first styling, offering a consistent and responsive layout. Core form elements and UI interactions are powered by shadcn/ui, ensuring accessibility, form validation feedback, and design consistency across all steps. The background features a soft gradient for visual engagement, and all steps are rendered within a centered, fixed-height card to maintain alignment and usability.Tailwind CSS v4 was used for utility-first styling, with shadcn/ui components for form controls and layout consistency.
+
+## 5. Mock API Behavior
+
+The final form submission simulates a POST request to `https://jsonplaceholder.typicode.com/posts`. This mock endpoint is used to replicate a real API integration during development. Upon receiving a successful HTTP 200 response, the wizard displays a "Quote submitted!" message, clears the draft from localStorage, and could optionally trigger a redirect or reset. This simulates the behavior expected in production environments without requiring a backend.The final form submission simulates a POST request to `https://jsonplaceholder.typicode.com/posts`. Upon success (HTTP 200), the wizard displays a confirmation message and clears the saved draft from localStorage.
+
+---
+
+This project demonstrates component structure, state management, data validation, and modern UI practices using React 19, Tailwind v4, and Next.js App Router.
