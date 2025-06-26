@@ -1,4 +1,5 @@
 "use client";
+
 import { useQuote } from "../../context/QuoteProvider";
 import { QuoteActionType, VesselType } from "../../types";
 import { Input } from "@/app/components/ui/input";
@@ -12,6 +13,7 @@ import {
 } from "@/app/components/ui/select";
 import { useState, useEffect } from "react";
 
+// Enum for fields in the vessel step
 const enum VesselStepField {
   VesselName = "vesselName",
   VesselType = "vesselType",
@@ -24,15 +26,19 @@ interface VesselStepProps {
 export default function VesselStep({ title }: Readonly<VesselStepProps>) {
   const { state, dispatch } = useQuote();
   const { vesselName = "", vesselType = "" } = state.form;
+
+  // Tracks whether each field has been touched (for showing validation messages)
   const [touched, setTouched] = useState({
     vesselName: false,
     vesselType: false,
   });
 
+  // Valid when vessel name is not empty and vessel type matches enum
   const isValid =
     vesselName.trim() !== "" &&
     Object.values(VesselType).includes(vesselType as VesselType);
 
+  // Handle input change for vessel name
   const handleVesselNameChange = (value: string) => {
     dispatch({
       type: QuoteActionType.SetField,
@@ -41,6 +47,7 @@ export default function VesselStep({ title }: Readonly<VesselStepProps>) {
     });
   };
 
+  // Handle selection change for vessel type
   const handleVesselTypeChange = (value: VesselType) => {
     dispatch({
       type: QuoteActionType.SetField,
@@ -48,14 +55,18 @@ export default function VesselStep({ title }: Readonly<VesselStepProps>) {
       value,
     });
   };
+
+  // Proceed to the next step if the current form is valid
   const handleNext = () => {
     if (isValid) dispatch({ type: QuoteActionType.NextStep });
   };
 
+  // Return to the previous step
   const handleBack = () => {
     dispatch({ type: QuoteActionType.PrevStep });
   };
 
+  // Set touched if fields are pre-filled (rehydrated from localStorage)
   useEffect(() => {
     if (vesselName) setTouched((prev) => ({ ...prev, vesselName: true }));
     if (vesselType) setTouched((prev) => ({ ...prev, vesselType: true }));
@@ -67,6 +78,7 @@ export default function VesselStep({ title }: Readonly<VesselStepProps>) {
       <div className="flex flex-col gap-6">
         <h2 className="text-lg font-semibold">{title}</h2>
 
+        {/* Vessel Name Input */}
         <div>
           <label htmlFor="vesselName" className="block mb-1 font-medium">
             Vessel Name
@@ -86,7 +98,8 @@ export default function VesselStep({ title }: Readonly<VesselStepProps>) {
           )}
         </div>
 
-        <div className={"w-full"}>
+        {/* Vessel Type Select */}
+        <div className="w-full">
           <label htmlFor="vesselType-label" className="block mb-1 font-medium">
             Vessel Type
           </label>
@@ -97,7 +110,7 @@ export default function VesselStep({ title }: Readonly<VesselStepProps>) {
               handleVesselTypeChange(value as VesselType)
             }
           >
-            <SelectTrigger className={"w-full"}>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select vessel type" />
             </SelectTrigger>
             <SelectContent>
@@ -115,6 +128,8 @@ export default function VesselStep({ title }: Readonly<VesselStepProps>) {
           )}
         </div>
       </div>
+
+      {/* Navigation Buttons */}
       <div className="flex justify-between">
         <Button type="button" variant="outline" onClick={handleBack}>
           Back

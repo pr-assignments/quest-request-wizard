@@ -10,6 +10,7 @@ interface ReviewStepProps {
 export default function ReviewStep({ title }: Readonly<ReviewStepProps>) {
   const { state, dispatch } = useQuote();
 
+  // Submits the form data to a mock API and handles response
   const handleSubmit = async () => {
     try {
       const response = await fetch(
@@ -24,7 +25,6 @@ export default function ReviewStep({ title }: Readonly<ReviewStepProps>) {
       if (response.ok) {
         toast.success("Quote submitted!");
         localStorage.removeItem("quoteDraft");
-        // Optionally reset or navigate away
       } else {
         toast.error("Failed to submit quote.");
       }
@@ -34,6 +34,7 @@ export default function ReviewStep({ title }: Readonly<ReviewStepProps>) {
     }
   };
 
+  // Go back to the previous step
   const handleBack = () => {
     dispatch({ type: QuoteActionType.PrevStep });
   };
@@ -43,6 +44,7 @@ export default function ReviewStep({ title }: Readonly<ReviewStepProps>) {
       <div className="flex flex-col gap-6">
         <h2 className="text-lg font-semibold">{title}</h2>
 
+        {/* Display a key-value summary of all form fields */}
         <div className="space-y-2 text-sm">
           {Object.entries(state.form).map(([key, value]) => (
             <div key={key} className="flex justify-between border-b pb-1">
@@ -54,6 +56,7 @@ export default function ReviewStep({ title }: Readonly<ReviewStepProps>) {
           ))}
         </div>
 
+        {/* Navigation buttons */}
         <div className="flex justify-between pt-4">
           <Button type="button" variant="outline" onClick={handleBack}>
             Back

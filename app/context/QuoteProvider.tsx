@@ -2,11 +2,13 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
 import { QuoteRequest, QuoteActionType } from "../types";
 
+// Define the shape of our global form state
 interface QuoteState {
   currentStep: number;
   form: Partial<QuoteRequest>;
 }
 
+// Define all possible actions for useReducer
 type Action =
   | {
       [K in keyof QuoteRequest]: {
@@ -20,16 +22,19 @@ type Action =
   | { type: QuoteActionType.SetStep; step: number }
   | { type: QuoteActionType.LoadDraft; data: QuoteState };
 
+// Initial default state
 const defaultState: QuoteState = {
   currentStep: 1,
-  form: { companyName: "helow", contactEmail: "mpompa@email.com" },
+  form: { companyName: "", contactEmail: "" },
 };
 
+// Create a context to share state and dispatch globally
 const QuoteContext = createContext<{
   state: QuoteState;
   dispatch: React.Dispatch<Action>;
 }>({ state: defaultState, dispatch: () => {} });
 
+// Reducer function to handle state transitions
 function quoteReducer(state: QuoteState, action: Action): QuoteState {
   switch (action.type) {
     case QuoteActionType.SetField: {
@@ -54,16 +59,19 @@ function quoteReducer(state: QuoteState, action: Action): QuoteState {
   }
 }
 
+// Context provider that wraps the app and enables global state
 export const QuoteProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(quoteReducer, defaultState);
 
   useEffect(() => {
+    // Try loading persisted data from localStorage on mount
     const draft = localStorage.getItem("quoteDraft");
     if (draft) {
       const parsed: QuoteState = JSON.parse(draft);
 
+      // Determine which step user should resume at
       const { form } = parsed;
       let step = 1;
       if (form.companyName && form.contactEmail) step = 2;
@@ -90,4 +98,5 @@ export const QuoteProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+// Custom hook to consume the context
 export const useQuote = () => useContext(QuoteContext);
