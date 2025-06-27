@@ -5,8 +5,8 @@
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/your-username/quote-request-wizard.git
-cd quote-request-wizard
+git clone https://github.com/pr-assignments/quest-request-wizard.git
+cd quest-request-wizard
 ```
 
 2. **Install dependencies**
